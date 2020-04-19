@@ -13,18 +13,25 @@ const MongoClient = require("mongodb").MongoClient;
 const uri = `mongodb+srv://${process.env.MONGODB_NICKNAME}:${process.env.MONGODB_PASSWORD}@mongodatabase-tt40v.mongodb.net/test?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 });
 client.connect(() => {
   const collection = client.db("test").collection("messages");
-  console.log("Connected to database! ");
-  //TWITCH CLIENT
   const opts = {
     identity: {
       username: process.env.TWITCH_NICKNAME,
-      password: process.env.TWITCH_AUTH
+      password: process.env.TWITCH_AUTH,
     },
-    channels: ["summarek", "randombrucetv", "h2p_gucio", "adamcy_"]
+    channels: [
+      "summarek",
+      "h2p_gucio",
+      "adamcy_",
+      "demonzz1",
+      "paramaxil",
+      "qeebs",
+      "patiro",
+      "franio",
+    ],
   };
 
   const twitchClient = new tmi.client(opts);
@@ -38,12 +45,11 @@ client.connect(() => {
     const commandName = msg.trim();
     let author = user["display-name"];
     let messageChannel = target.slice(1);
-    console.log(`${author} said "${commandName}" in ${messageChannel}`);
     collection.insertOne({
       twitchChannel: messageChannel,
       twitchAuthor: author,
       twitchMessage: commandName,
-      time: moment().format("L") + " " + moment().format("LT")
+      time: moment().format("L") + " " + moment().format("LT"),
     });
   }
 
@@ -53,16 +59,15 @@ client.connect(() => {
   app.use(cors());
   app.use(
     bodyParser.urlencoded({
-      extended: true
+      extended: true,
     })
   );
 
   app.get("/:channel/:nickname", (req, res) => {
-    //res.send(req.params);
     collection
       .find({
         twitchChannel: req.params.channel,
-        twitchAuthor: req.params.nickname
+        twitchAuthor: req.params.nickname,
       })
       .toArray(function(error, documents) {
         if (error) throw error;
@@ -72,7 +77,4 @@ client.connect(() => {
   });
 
   app.listen(port, () => console.log(`Example app listening on port ${port}!`));
-
-  // perform actions on the collection object
-  // client.close();
 });
