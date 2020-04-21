@@ -65,7 +65,7 @@ export default {
   methods: {
     getData(channel, nick) {
       axios
-        .get(`http://localhost:3000/${channel}/${nick}`)
+        .get(`http://104.248.135.89:3000/${channel}/${nick}`)
         .then((response) => {
           // handle success
           console.log(response.data);
